@@ -1,0 +1,498 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* blackbox.ai swaps the desktop nav for a burger at 1000px, not Tailwind's 1024px.
+     Redefining `lg` keeps variant ordering correct — an arbitrary `min-[1000px]:` variant
+     can lose the cascade to a `md:` rule setting the same property, since Tailwind sorts
+     named breakpoints after arbitrary ones. */
+  --breakpoint-lg: 1000px;
+
+  /* ---- Three type roles (see layout.tsx for the substitution rationale) ----
+     `bx-numerals` leads the two heading stacks but not the reading one, mirroring the
+     target: its heading roles are Berkeley Mono *Numerals* variants, its body role is not.
+     The @font-face below restricts it to digits, so letters still come from Archivo /
+     Darker Grotesque. */
+  --font-mono: var(--font-functional), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: bx-numerals, var(--font-copy-heading), sans-serif;
+  --font-display: bx-numerals, var(--font-reading), sans-serif;
+  --font-reading-plain: var(--font-reading), sans-serif;
+
+  /* ---- Brand ---- */
+  --color-bx-accent: #22d3ee; /* the single accent — markers, hovers, active states */
+  --color-bx-accent-surface: #0fb0ca; /* full-bleed accent. Bright cyan at this size glares;
+                                         this holds 6.0:1 against bx-ink-dark, well past AA. */
+  --color-bx-accent-focus: #3ddcf5; /* focus rings only */
+
+  /* ---- Surfaces, darkest to lightest ---- */
+  --color-bx-void: #080808; /* page + header background */
+  --color-bx-panel: #0a0a0a; /* dropdown panels */
+  --color-bx-well: #0c0c0c; /* tooltips */
+  --color-bx-sunken: #0e0e0e; /* alternating section background */
+  --color-bx-raised: #121212; /* footer */
+  --color-bx-slab: #141414; /* benchmark section */
+  --color-bx-tile: #161616; /* mega-menu hero tile */
+
+  /* ---- Ink ---- */
+  --color-bx-ink: #f2f2f0; /* primary text */
+  --color-bx-soft: #c7cacb; /* footer + nav links, a step below ink */
+  --color-bx-dim: #9ca0a2; /* body copy */
+  --color-bx-mute: #8c9092; /* tertiary */
+  --color-bx-faint: #7e8285; /* eyebrows, table headers */
+  --color-bx-shade: #52555a; /* muted bar fills, disabled marks */
+  --color-bx-ink-dark: #1f2326; /* dark ink — only on the accent CTA */
+
+  /* ---- Hairlines. Four steps, and the difference is visible: don't round one
+     to another. `bx-edge` is opaque, not an alpha — it only reads correctly
+     against bx-tile. ---- */
+  --color-bx-line: rgb(255 255 255 / 0.14); /* card + panel borders */
+  --color-bx-line-row: rgb(255 255 255 / 0.1); /* definition + table rows */
+  --color-bx-line-soft: rgb(255 255 255 / 0.07); /* header underline */
+  --color-bx-line-hair: rgb(255 255 255 / 0.06); /* marquee dividers */
+  --color-bx-edge: #262626; /* opaque product-card border */
+
+  /* ---- Derived accents ---- */
+  --color-bx-accent-wash: rgb(34 211 238 / 0.07); /* highlighted-row fill */
+  --color-bx-tile-hover: #1a1a1a; /* card hover lift */
+  --color-bx-tile-hot: #1a1614; /* card hover lift, warm (mega menu) */
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+}
+
+/* shadcn token mapping — the target's own oklch values. `--radius: 0` is not an
+   oversight: nothing on blackbox.ai has a corner radius except pills and dots. */
+:root {
+  --background: oklch(13% 0 0);
+  --foreground: oklch(97% 0 0);
+  --card: oklch(20% 0 0);
+  --card-foreground: oklch(97% 0 0);
+  --popover: oklch(20% 0 0);
+  --popover-foreground: oklch(97% 0 0);
+  --primary: oklch(70% 0.2 42);
+  --primary-foreground: oklch(18% 0.02 42);
+  --secondary: oklch(25% 0 0);
+  --secondary-foreground: oklch(97% 0 0);
+  --muted: oklch(25% 0 0);
+  --muted-foreground: oklch(70% 0 0);
+  --accent: oklch(25% 0 0);
+  --accent-foreground: oklch(97% 0 0);
+  --destructive: oklch(70.4% 0.191 22.216);
+  --border: oklch(100% 0 0 / 0.12);
+  --input: oklch(100% 0 0 / 0.15);
+  --ring: oklch(70% 0.2 42);
+  --chart-1: oklch(70% 0.2 42);
+  --chart-2: oklch(75% 0.18 55);
+  --chart-3: oklch(65% 0.16 35);
+  --chart-4: oklch(60% 0.14 50);
+  --chart-5: oklch(55% 0.12 40);
+  --radius: 0rem;
+  --sidebar: oklch(16% 0 0);
+  --sidebar-foreground: oklch(97% 0 0);
+  --sidebar-primary: oklch(70% 0.2 42);
+  --sidebar-primary-foreground: oklch(18% 0.02 42);
+  --sidebar-accent: oklch(25% 0 0);
+  --sidebar-accent-foreground: oklch(97% 0 0);
+  --sidebar-border: oklch(100% 0 0 / 0.12);
+  --sidebar-ring: oklch(70% 0.2 42);
+
+  /* ---- Layout rhythm (measured) ---- */
+  --bx-frame: 1536px; /* max content width */
+  --bx-gutter: clamp(1.375rem, 4.375vw, 3.5rem); /* horizontal page padding */
+  --bx-header-h: 65px; /* fixed header height; 51px under 1000px */
+  --bx-rail: rgb(255 255 255 / 0.12); /* vertical hairline colour */
+}
+
+/* Numerals only. The target's heading faces are Berkeley Mono "Numerals" variants —
+   proportional letterforms with squared, technical digits and a slashed zero. DM Mono is
+   the closest free stand-in for those digits.
+
+   The `unicode-range` is what makes this work: the browser pulls only these codepoints
+   from DM Mono and leaves everything else to the next family in the stack. Swapping the
+   whole heading family to a monospace instead would widen every heading and push "t/s"
+   away from "454" — the target's figures are demonstrably not monospaced. */
+@font-face {
+  font-family: bx-numerals;
+  src: url("/fonts/dm-mono-var.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0030-0039, U+002B, U+002E, U+00D7;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-bx-void text-bx-ink;
+    font-family: var(--font-functional), ui-monospace, monospace;
+    font-size: 16px;
+    overflow-x: clip;
+  }
+  /* Site-wide focus treatment — square, accent, offset. */
+  :focus-visible {
+    outline: 2px solid var(--color-bx-accent-focus);
+    outline-offset: 4px;
+  }
+}
+
+@layer components {
+  /* ============================================================
+     Layout primitives — every section is built from these three.
+     ============================================================ */
+
+  /* The centred content column. */
+  .bx-frame {
+    width: 100%;
+    max-width: var(--bx-frame);
+    padding-inline: var(--bx-gutter);
+    margin-inline: auto;
+    box-sizing: border-box;
+  }
+
+  /* Horizontal padding without the max-width clamp — used by the full-bleed header. */
+  .bx-pad-x {
+    padding-inline: var(--bx-gutter);
+  }
+
+  /* Full-height vertical hairlines sitting behind section content. */
+  .bx-rails {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .bx-rail-v {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--bx-rail);
+  }
+  .bx-rail-h {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--bx-rail);
+  }
+}
+
+/* ============================================================
+   Motion. Everything below is gated on `html.bx-motion`, so
+   removing that class from <html> disables the lot.
+   ============================================================ */
+
+@keyframes bx-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bx-cell-in {
+  from {
+    opacity: 0;
+    transform: scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bx-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bx-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Soft blink — a dim-and-return, distinct from `bx-blink`'s hard on/off cursor.
+   Used by status chips inside hovered card artwork. */
+@keyframes bx-blink-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes bx-pulse {
+  from {
+    box-shadow: 0 0 0 0 rgb(34 211 238 / 0.6);
+  }
+  to {
+    box-shadow: 0 0 0 12px rgb(34 211 238 / 0);
+  }
+}
+
+@keyframes bx-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Dashed-line "flow" used by the hero diagram and card artwork. Each user sets
+   --bx-travel to control direction and distance. */
+@keyframes bx-dash {
+  to {
+    stroke-dashoffset: var(--bx-travel, -20px);
+  }
+}
+
+@keyframes bx-gpu {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ---- Reveal 1: elements rise into view. An IntersectionObserver stamps
+   `data-risen` (see src/hooks/use-reveal.ts). ---- */
+html.bx-motion [data-rise]:not([data-risen]) {
+  opacity: 0;
+}
+html.bx-motion [data-rise][data-risen] {
+  animation: bx-rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: var(--bx-rise-delay, 0s);
+}
+html.bx-motion [data-rise][data-risen="still"] {
+  animation: none;
+}
+
+/* Stagger children of a group by 80ms each, capped after the 6th. */
+[data-rise-group] > :nth-child(2) {
+  --bx-rise-delay: 80ms;
+}
+[data-rise-group] > :nth-child(3) {
+  --bx-rise-delay: 160ms;
+}
+[data-rise-group] > :nth-child(4) {
+  --bx-rise-delay: 240ms;
+}
+[data-rise-group] > :nth-child(5) {
+  --bx-rise-delay: 320ms;
+}
+[data-rise-group] > :nth-child(6) {
+  --bx-rise-delay: 400ms;
+}
+[data-rise-group] > :nth-child(n + 7) {
+  --bx-rise-delay: 480ms;
+}
+
+/* ---- Reveal 2: background rails fade rather than rise. ---- */
+html.bx-motion .bx-rails[data-reveal] {
+  opacity: 0;
+  transition: opacity 0.9s ease-out;
+}
+html.bx-motion .bx-rails[data-reveal][data-shown] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-rise],
+  .bx-rails[data-reveal] {
+    opacity: 1 !important;
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .bx-marquee-anim,
+  [class*="bx-flow-"],
+  .bx-gpu {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   Mobile section rhythm.
+
+   Each section carries its own desktop padding (130/110, 120/120, …), which the
+   target collapses to a flat 72px below 900px. Without this every section runs
+   70–150px tall on mobile and the page drifts ~4% long.
+
+   Done as one override rather than a responsive pair on all eight sections —
+   this mirrors how the target does it, and keeps the desktop values readable at
+   their call sites. `!important` is needed for the same reason it is there:
+   it has to beat the per-section utility.
+   ============================================================ */
+@media (max-width: 900px) {
+  main > section {
+    padding-top: 72px !important;
+    padding-bottom: 72px !important;
+  }
+}
+
+/* ============================================================
+   Thin scrollbars — dropdown panels, code blocks, wide tables.
+   ============================================================ */
+.bx-thin-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.16) transparent;
+}
+.bx-thin-scroll::-webkit-scrollbar {
+  width: 0.25rem;
+  height: 0.25rem;
+}
+.bx-thin-scroll::-webkit-scrollbar-track,
+.bx-thin-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+.bx-thin-scroll::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.16);
+  border-radius: 999px;
+}
+.bx-thin-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.28);
+}
+
+/* ============================================================
+   Shared text roles. These recur in every section, so they live
+   here rather than being re-declared per component.
+
+   They MUST stay inside `@layer components`. Unlayered rules outrank every
+   Tailwind utility (which live in `@layer utilities`) regardless of source
+   order, so an unlayered `.bx-eyebrow` would force every section that needs a
+   different size or colour to reach for `!`. Inside the layer, a plain
+   `text-[13px]` overrides it as you would expect.
+   ============================================================ */
+
+@layer components {
+  /* Small uppercase monospace label above a heading, with the accent marker dot. */
+  .bx-eyebrow {
+    font-family: var(--font-functional), monospace;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-bx-faint);
+  }
+
+  /* Section headline — the `copy-heading` role (Archivo). Every top-level section
+     h2 on the target uses exactly this. */
+  .bx-h2 {
+    font-family: bx-numerals, var(--font-copy-heading), sans-serif;
+    font-size: clamp(40px, 4vw, 60px);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    color: var(--color-bx-ink);
+  }
+
+  /* Sub-headline — the `marketing-display` role (Darker Grotesque). NOT interchangeable
+     with .bx-h2: Darker Grotesque is condensed, so at the same px it fits noticeably more
+     per line. Using .bx-h2 here re-wraps the heading. Card titles and the code-block
+     heading both take this role. */
+  .bx-h3 {
+    font-family: bx-numerals, var(--font-reading), sans-serif;
+    font-size: clamp(36px, 4.4vw, 56px);
+    font-weight: 500;
+    line-height: 0.92;
+    letter-spacing: -0.015em;
+    color: var(--color-bx-ink);
+  }
+
+  /* Body copy. */
+  .bx-body {
+    font-family: var(--font-reading), sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--color-bx-dim);
+  }
+
+  /* Monospace data/meta text — table cells, bullet lists, captions. */
+  .bx-meta {
+    font-family: var(--font-functional), monospace;
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+    color: var(--color-bx-dim);
+  }
+
+  /* Underline-wipe link, left to right. Used by nav links and card titles. */
+  .bx-wipe {
+    background-image: linear-gradient(90deg, rgb(34 211 238 / 0.4), rgb(34 211 238 / 0.4));
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0 1px;
+    transition:
+      color 0.4s ease-in-out,
+      background-size 0.4s ease-in-out;
+  }
+  .bx-wipe:hover {
+    background-size: 100% 1px;
+    color: var(--color-bx-accent);
+  }
+}
